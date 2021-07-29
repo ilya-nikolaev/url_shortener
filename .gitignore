@@ -1,0 +1,6 @@
+/__pycache__/*
+.env
+count_py_lines.py
+.idea/
+*.pyc
+venv/
