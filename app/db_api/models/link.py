@@ -1,5 +1,5 @@
 from sqlalchemy import BIGINT, TEXT
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column
 
 from app.db_api import Base
 
@@ -7,7 +7,5 @@ from app.db_api import Base
 class Link(Base):
     __tablename__ = "links"
 
-    id = Column(BIGINT, autoincrement=True)
-
-    source = Column(TEXT, primary_key=True)
-    cropped = Column(TEXT, unique=True, nullable=False)
+    id = Column(BIGINT, primary_key=True)
+    source = Column(TEXT, unique=True, nullable=False)

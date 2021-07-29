@@ -22,6 +22,10 @@ def num_to_str(int_id: int) -> str:
     return res
 
 
+def str_to_num(line: str) -> int:
+    return sum(ID_SYMBOLS.index(symbol) * 62 ** i for i, symbol in enumerate(line))
+
+
 def validate_link(link_data: ParseResult, db: Session) -> tuple[str, str]:
     link = link_data.geturl()
 
@@ -51,24 +55,31 @@ def get_shortened_link(link: str, db: Session) -> tuple[str, str]:
         select(
             Link
         ).where(
-            Link.source == link_data.geturl()
+            Link.source == link
         )
     ).scalars().first()
 
     if shortened_link is None:
-        link_number = db.execute("select count(*) from links").scalars().first()
-        shortened_link = Link(source=link, cropped=num_to_str(link_number))
+        shortened_link = Link(source=link)
         db.add(shortened_link)
         db.commit()
 
-    return shortened_link.cropped, message
+    return num_to_str(shortened_link.id), message
 
 
 def get_source(shortened: str, db: Session):
+    if len(shortened) > 42:  # protection against freezes during calculations
+        return None
+
+    try:
+        link_id = str_to_num(shortened)
+    except ValueError:
+        return None
+
     return db.execute(
         select(
             Link
         ).where(
-            Link.cropped == shortened
+            Link.id == link_id
         )
     ).scalars().first()
