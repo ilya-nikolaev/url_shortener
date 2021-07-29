@@ -9,7 +9,7 @@ def index():
     if request.method == 'GET':
         link = request.args.get('url', "")
         shortened, message = get_shortened_link(link, g.get('db'))
-        return render_template('index.html', shortened_url=shortened, message="")
+        return render_template('index.html', shortened_url=shortened, message=message)
     else:
         return make_response('', 503)
 

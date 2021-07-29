@@ -23,12 +23,16 @@ def num_to_str(int_id: int) -> str:
 
 
 def validate_link(link_data: ParseResult, db: Session) -> tuple[str, str]:
+    link = link_data.geturl()
+
+    if not link_data.netloc:
+        return link, ''
+
     if link_data.scheme not in ['https', 'http']:
         return '', 'Not valid URL-scheme'
     if db.execute(select(ProhibitedDomain).where(ProhibitedDomain.domain == link_data.netloc)).first():
         return '', 'Domain is prohibited'
 
-    link = link_data.geturl()
     if not link.endswith('/'):
         link = link + '/'
 

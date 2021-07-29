@@ -1,4 +1,5 @@
 <!doctype html>
+<!--suppress ALL -->
 <html lang="en">
     <head>
         <!-- Required -->
@@ -13,13 +14,13 @@
 
         <title>URL Shortener</title>
     </head>
-    <body class="text-center vw-100" onload="onLoad('{{ shortened_url }}');">
+    <body class="vw-100" onload="onLoad('{{ shortened_url }}');">
 
         <div class="container">
-            <h1>Please input your link</h1>
+            <h1 class="text-center">Please input your link</h1>
 
             <div class="form-group col-xs-12 col-sm-12 col-md-8 col-lg-6 col-xl-4 mx-auto">
-                <form action="" method="get" class="mt-5">
+                <form action="" method="get" class="mt-5 text-center">
                     <div class="form-floating mx-auto">
                         <input id="floatingURL"
                                class="form-control form-control-lg"
@@ -31,8 +32,14 @@
                                data-bs-placement="top"
                                title="Link copied!"
                                onfocus="showTooltip(); onPressInput();"
+                               aria-describedby="message"
                                required>
                         <label for="floatingURL">Link</label>
+                        {% if message %}
+                            <small id="message" class="form-text text-danger text-start">{{ message }}</small>
+                        {% else %}
+                            <small id="message" class`="form-text"></small>
+                        {% endif %}
                     </div>
                     <button type="submit" class="btn btn-lg btn-primary mt-3 mb-3 wx-auto">Generate short link!</button>
                 </form>
