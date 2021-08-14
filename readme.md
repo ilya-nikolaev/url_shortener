@@ -10,5 +10,5 @@ The required python version is 3.9
 
 ## Run
 
-+ python3.9 -m app
++ `python3.9 -m app`
 
