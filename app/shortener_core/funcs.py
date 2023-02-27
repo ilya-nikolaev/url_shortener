@@ -1,9 +1,10 @@
+import string
 from typing import Optional
+from urllib.parse import urlparse
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from urllib.parse import urlparse, ParseResult
-import string
+
 from app.db_api.models import Link, ProhibitedDomain
 from app.shortener_core.exc import LinkNotValid
 
