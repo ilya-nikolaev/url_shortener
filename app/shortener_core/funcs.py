@@ -1,10 +1,14 @@
+from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from urllib.parse import urlparse, ParseResult
 import string
 from app.db_api.models import Link, ProhibitedDomain
+from app.shortener_core.exc import LinkNotValid
 
 ID_SYMBOLS = string.digits + string.ascii_letters
+ALPHABET_LENGTH = len(ID_SYMBOLS)
 
 
 # https://github.com/Tishka17/aiogram_dialog/blob/develop/aiogram_dialog/context/stack.py#L22
@@ -13,61 +17,55 @@ def num_to_str(int_id: int) -> str:
         return ID_SYMBOLS[0]
 
     base = len(ID_SYMBOLS)
-    res = ""
+    res = []
 
     while int_id:
         int_id, mod = divmod(int_id, base)
-        res += ID_SYMBOLS[mod]
+        res.append(ID_SYMBOLS[mod])
 
-    return res
+    return "".join(res)
 
 
 def str_to_num(line: str) -> int:
-    return sum(ID_SYMBOLS.index(symbol) * 62 ** i for i, symbol in enumerate(line))
+    return sum(ID_SYMBOLS.index(symbol) * ALPHABET_LENGTH ** i for i, symbol in enumerate(line))
 
 
-def validate_link(link_data: ParseResult, db: Session) -> tuple[str, str]:
-    link = link_data.geturl()
+def validate_link(link: str, db: Session) -> str:
+    link_data = urlparse(link)
+    formatted_link = link_data.geturl()
 
     if not link_data.netloc:
-        return link, ''
+        return formatted_link
 
     if link_data.scheme not in ['https', 'http']:
-        return '', 'Not valid URL-scheme'
+        raise LinkNotValid('Not valid URL-scheme')
     if db.execute(select(ProhibitedDomain).where(ProhibitedDomain.domain == link_data.netloc)).first():
-        return '', 'Domain is prohibited'
+        raise LinkNotValid('Domain is prohibited')
 
-    if not link.endswith('/'):
-        link = link + '/'
+    if not formatted_link.endswith('/'):
+        formatted_link = formatted_link + '/'
 
-    return link, ''
+    return formatted_link
 
 
 def get_shortened_link(link: str, db: Session) -> tuple[str, str]:
+    try:
+        link = validate_link(link, db)
+    except LinkNotValid as e:
+        return "", e.message
 
-    link_data = urlparse(link)
-    link, message = validate_link(link_data, db)
-
-    if not link:
-        return link, message
-
-    shortened_link: Link = db.execute(
-        select(
-            Link
-        ).where(
-            Link.source == link
-        )
-    ).scalars().first()
+    query = select(Link).where(Link.source == link)
+    shortened_link: Link = db.scalar(query)
 
     if shortened_link is None:
         shortened_link = Link(source=link)
         db.add(shortened_link)
         db.commit()
 
-    return num_to_str(shortened_link.id), message
+    return num_to_str(shortened_link.id), ""
 
 
-def get_source(shortened: str, db: Session):
+def get_source(shortened: str, db: Session) -> Optional[Link]:
     if len(shortened) > 42:  # protection against freezes during calculations
         return None
 
@@ -76,10 +74,5 @@ def get_source(shortened: str, db: Session):
     except ValueError:
         return None
 
-    return db.execute(
-        select(
-            Link
-        ).where(
-            Link.id == link_id
-        )
-    ).scalars().first()
+    query = select(Link).where(Link.id == link_id)
+    return db.scalar(query)

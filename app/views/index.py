@@ -12,5 +12,4 @@ def index():
 
 
 def register_index(app: Flask):
-    app.add_url_rule('/index', view_func=index, endpoint='index')
     app.add_url_rule('/', view_func=index, endpoint='index')

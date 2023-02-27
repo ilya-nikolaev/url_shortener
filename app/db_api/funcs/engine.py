@@ -5,10 +5,4 @@ from app.config_loader import DBSettings
 
 
 def create_db_engine(settings: DBSettings) -> Engine:
-    return create_engine(
-        f"postgresql://"
-        f"{settings.user}:"
-        f"{settings.pswd}@"
-        f"{settings.host}/"
-        f"{settings.name}"
-    )
+    return create_engine(f"postgresql+psycopg2://{settings.user}:{settings.pswd}@{settings.host}/{settings.name}")

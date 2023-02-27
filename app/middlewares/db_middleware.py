@@ -7,12 +7,11 @@ class DBMiddleware:
         self.db_factory = db_factory
 
         app.before_request(self.open)
-        # noinspection PyTypeChecker
         app.teardown_appcontext(self.close)
 
     def open(self):
         g.db = self.db_factory()
 
-    # noinspection PyMethodMayBeStatic
-    def close(self, *_args, **_kwargs):
+    @staticmethod
+    def close(*_args, **_kwargs):
         g.db.close()

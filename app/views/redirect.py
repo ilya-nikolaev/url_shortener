@@ -1,15 +1,15 @@
 from flask import Flask
-from flask import redirect, make_response
 from flask import g
+from flask import redirect, abort
 
 from app.shortener_core.funcs import get_source
 
 
 def go_link(shortened: str):
-    source_link = get_source(shortened, g.get('db'))
-    if source_link is None:
-        return make_response('', 404)
-    return redirect(source_link.source)
+    link = get_source(shortened, g.get('db'))
+    if link is None:
+        return abort(404)
+    return redirect(link.source)
 
 
 def register_redirect(app: Flask):
