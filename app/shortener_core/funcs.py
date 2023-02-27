@@ -44,7 +44,7 @@ def validate_link(link: str, db: Session) -> str:
         raise LinkNotValid('Domain is prohibited')
 
     if not formatted_link.endswith('/'):
-        formatted_link = formatted_link + '/'
+        formatted_link = formatted_link
 
     return formatted_link
 

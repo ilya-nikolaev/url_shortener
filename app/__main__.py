@@ -19,7 +19,13 @@ def setup_middlewares(app: Flask, db_factory: sessionmaker):
     DBMiddleware(app, db_factory)
 
 
-def create_app(config: Config, db_factory: sessionmaker) -> Flask:
+def create_app() -> Flask:
+    config: Config = load_config()
+
+    db_engine = create_db_engine(config.db_settings)
+    db_factory = create_db_factory(db_engine)
+
+    create_all(db_engine)
 
     app = Flask(__name__)
     app.secret_key = config.app_settings.secret
@@ -33,19 +39,9 @@ def create_app(config: Config, db_factory: sessionmaker) -> Flask:
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    config: Config = load_config()
-
-    db_engine = create_db_engine(config.db_settings)
-    db_factory = create_db_factory(db_engine)
-
-    app = create_app(config, db_factory)
-
-    create_all(db_engine)
-
-    try:
-        app.run(host="127.0.0.1", port=5000)
-    except KeyboardInterrupt:
-        db_factory.close_all()
+    app = create_app()
+    # Local run
+    app.run(host="127.0.0.1", port=5000)
 
 
 if __name__ == '__main__':

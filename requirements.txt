@@ -1,4 +1,4 @@
-psycopg2-binary
-sqlalchemy
-flask
-environs
+psycopg2~=2.9.5
+sqlalchemy~=2.0.4
+flask~=2.2.3
+environs~=9.5.0
