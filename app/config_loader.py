@@ -11,6 +11,7 @@ class AppSettings:
 @dataclass
 class DBSettings:
     host: str
+    port: str
     name: str
     user: str
     pswd: str
@@ -32,6 +33,7 @@ def load_config():
         ),
         db_settings=DBSettings(
             host=env.str("DB_HOST"),
+            port=env.str("DB_PORT"),
             name=env.str("DB_NAME"),
             user=env.str("DB_USER"),
             pswd=env.str("DB_PSWD"),
