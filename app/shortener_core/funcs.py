@@ -40,11 +40,11 @@ def validate_link(link: str, db: Session) -> str:
 
     if link_data.scheme not in ['https', 'http']:
         raise LinkNotValid('Not valid URL-scheme')
+
     if db.execute(select(ProhibitedDomain).where(ProhibitedDomain.domain == link_data.netloc)).first():
         raise LinkNotValid('Domain is prohibited')
 
-    if not formatted_link.endswith('/'):
-        formatted_link = formatted_link
+    formatted_link = formatted_link.rstrip("/")
 
     return formatted_link
 
