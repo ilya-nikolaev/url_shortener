@@ -1,7 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import sessionmaker
 
 from config.loader import DBSettings
+
+
+def create_db_factory(db_engine: Engine) -> sessionmaker:
+    return sessionmaker(bind=db_engine, expire_on_commit=False)
 
 
 def create_db_engine(settings: DBSettings) -> Engine:

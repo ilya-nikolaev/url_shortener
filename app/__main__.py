@@ -4,7 +4,7 @@ from flask import Flask
 from sqlalchemy.orm import sessionmaker
 
 from config.loader import load_config, Config
-from db.funcs import create_db_engine, create_db_factory
+from db.utils import create_db_engine, create_db_factory
 from app.middlewares.db_middleware import DBMiddleware
 from app.views import index, redirect
 
