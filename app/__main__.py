@@ -3,7 +3,7 @@ import logging
 from flask import Flask
 from sqlalchemy.orm import sessionmaker
 
-from app.config_loader import load_config, Config
+from config.loader import load_config, Config
 from db.funcs import create_db_engine, create_db_factory
 from app.middlewares.db_middleware import DBMiddleware
 from app.views import index, redirect

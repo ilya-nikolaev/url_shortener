@@ -6,7 +6,7 @@ from sqlalchemy import pool
 
 import db.models.link  # noqa
 import db.models.prohibited_domain  # noqa
-from app.config_loader import load_config
+from config.loader import load_config
 from db.base import Base
 from db.funcs.engine import get_db_url_from_settings
 
