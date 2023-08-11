@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db_api.models import Link, ProhibitedDomain
+from db.models import Link, ProhibitedDomain
 from app.shortener_core.exc import LinkNotValid
 
 ID_SYMBOLS = string.digits + string.ascii_letters

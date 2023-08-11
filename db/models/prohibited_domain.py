@@ -1,7 +1,7 @@
 from sqlalchemy import BIGINT, TEXT
 from sqlalchemy import Column
 
-from app.db_api import Base
+from db import Base
 
 
 class ProhibitedDomain(Base):
