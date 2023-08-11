@@ -2,10 +2,10 @@ import string
 from typing import Optional
 from urllib.parse import urlparse
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from db.models import Link, ProhibitedDomain
+from db.funcs import get_link_by_url, is_domain_prohibited
+from db.models import Link
 from app.shortener_core.exc import LinkNotValid
 
 ID_SYMBOLS = string.digits + string.ascii_letters
@@ -41,7 +41,7 @@ def validate_link(link: str, db: Session) -> str:
     if link_data.scheme not in ['https', 'http']:
         raise LinkNotValid('Not valid URL-scheme')
 
-    if db.execute(select(ProhibitedDomain).where(ProhibitedDomain.domain == link_data.netloc)).first():
+    if is_domain_prohibited(db, link_data.netloc):
         raise LinkNotValid('Domain is prohibited')
 
     formatted_link = formatted_link.rstrip("/")
@@ -55,8 +55,7 @@ def get_shortened_link(link: str, db: Session) -> tuple[str, str]:
     except LinkNotValid as e:
         return "", e.message
 
-    query = select(Link).where(Link.source == link)
-    shortened_link: Link = db.scalar(query)
+    shortened_link = get_link_by_url(db, link)
 
     if shortened_link is None:
         shortened_link = Link(source=link)
@@ -75,5 +74,4 @@ def get_source(shortened: str, db: Session) -> Optional[Link]:
     except ValueError:
         return None
 
-    query = select(Link).where(Link.id == link_id)
-    return db.scalar(query)
+    return db.get(Link, link_id)
